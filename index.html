@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>GPU Shadow</title>
+    <style>
+      body {
+        margin: 0;
+        overflow: hidden;
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- core three.js -->
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/OBJLoader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/EXRLoader.js"></script>
+
+    <script>
+      const renderer = new THREE.WebGLRenderer();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.shadowMap.enabled = true; // ✅ เปิดใช้งานเงา!
+      renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+      document.body.appendChild(renderer.domElement);
+
+      const scene = new THREE.Scene();
+
+      // ✅ กล้อง
+      const camera = new THREE.PerspectiveCamera(
+        75,
+        window.innerWidth / window.innerHeight,
+        0.1,
+        1000
+      );
+      camera.position.set(0, 2, 5);
+      camera.lookAt(0, 0, 0);
+      const controls = new THREE.OrbitControls(camera, renderer.domElement); //หมุนกล้อง
+
+      // ✅ Ambient Light
+      const ambientLight = new THREE.AmbientLight(0x404040);
+      scene.add(ambientLight);
+
+      // ✅ Directional Light
+      const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+      directionalLight.position.set(5, 10, 5);
+      directionalLight.castShadow = true;
+      scene.add(directionalLight);
+      const directionalLightHelper = new THREE.DirectionalLightHelper(
+        directionalLight,
+        0.2
+      );
+      scene.add(directionalLightHelper);
+
+      // ✅ Point Light
+      // const pointLight = new THREE.PointLight(0xffaaaa, 5, 5);
+      // pointLight.position.set(0, 3, 0);
+      // pointLight.castShadow = true;
+      // scene.add(pointLight);
+      // const pointLightHelper = new THREE.PointLightHelper(pointLight, 0.2);
+      // scene.add(pointLightHelper);
+
+      //ใส่พื้น
+      const texFloor = new THREE.TextureLoader().load(
+        "https://Punjaphon-Pun.github.io/grass-floor-pokemon.jpg",
+        (t) => {
+          t.wrapS = THREE.RepeatWrapping;
+          t.wrapT = THREE.RepeatWrapping;
+        }
+      );
+      const matFloor = new THREE.MeshStandardMaterial({
+        map: texFloor,
+      });
+      const planeGeometry = new THREE.PlaneGeometry(10, 10);
+      const plane = new THREE.Mesh(planeGeometry, matFloor);
+      plane.rotation.x = -Math.PI / 2;
+      plane.receiveShadow = true;
+      scene.add(plane);
+
+      //พื้นหลัง
+      const exrLoader = new THREE.EXRLoader();
+      exrLoader.load(
+        "https://Punjaphon-Pun.github.io/klippad_sunrise_2_1k.exr", 
+        function (texture) {
+          texture.mapping = THREE.EquirectangularReflectionMapping;
+          scene.background = texture; // ทำเป็นพื้นหลัง
+          scene.environment = texture; // ทำเป็น reflection
+        }
+      );
+
+      // Pokemon Center
+      const loader = new THREE.GLTFLoader();
+      loader.load(
+        "https://Punjaphon-Pun.github.io/pokemon_center.glb",
+        function (gltf) {
+          const object = gltf.scene;
+          object.castShadow = true; // ✅ วัตถุนี้สร้างเงา
+
+          // ตั้งค่า castShadow กับทุก mesh ใน object
+          object.traverse(function (child) {
+            if (child.isMesh) {
+              child.castShadow = true;
+              child.receiveShadow = true;
+            }
+          });
+          object.position.set(0.0, 0.7, 1.5);
+          object.scale.set(1.0, 1.0, 1.0);
+          scene.add(object);
+        },
+        undefined,
+        function (error) {
+          console.error("Error loading OBJ:", error);
+        }
+      );
+      
+      // Tree
+      loader.load(
+        "https://Punjaphon-Pun.github.io/ManyTree.glb",
+        function (gltf) {
+          const object = gltf.scene;
+          object.castShadow = true; // ✅ วัตถุนี้สร้างเงา
+          // ตั้งค่า castShadow กับทุก mesh ใน object
+          object.traverse(function (child) {
+            if (child.isMesh) {
+              child.castShadow = true;
+              child.receiveShadow = true;
+            }
+          });
+          object.position.set(0.0, 0.0, 0.0);
+          object.scale.set(1.0, 1.0, 1.0);
+          scene.add(object);
+        },
+        undefined,
+        function (error) {
+          console.error("Error loading OBJ:", error);
+        }
+      );
+
+      // Mountain
+      loader.load(
+        "https://Punjaphon-Pun.github.io/Mountain.glb",
+        function (gltf) {
+          const object = gltf.scene;
+          object.castShadow = true; // ✅ วัตถุนี้สร้างเงา
+          // ตั้งค่า castShadow กับทุก mesh ใน object
+          object.traverse(function (child) {
+            if (child.isMesh) {
+              child.castShadow = true;
+              child.receiveShadow = true;
+            }
+          });
+          object.position.set(0.0, 0.0, 0.0);
+          object.scale.set(1.0, 1.0, 1.0);
+          scene.add(object);
+        },
+        undefined,
+        function (error) {
+          console.error("Error loading OBJ:", error);
+        }
+      );
+
+      // Groundon
+      loader.load(
+        "https://Punjaphon-Pun.github.io/groudon.glb",
+        function (gltf) {
+          const object = gltf.scene;
+          object.castShadow = true; // ✅ วัตถุนี้สร้างเงา
+          // ตั้งค่า castShadow กับทุก mesh ใน object
+          object.traverse(function (child) {
+            if (child.isMesh) {
+              child.castShadow = true;
+              child.receiveShadow = true;
+            }
+          });
+          object.position.set(1.5, 0.0, -1.0);
+          object.rotation.y = -Math.PI / 4;
+          object.scale.set(0.8, 0.8, 0.8);
+          scene.add(object);
+        },
+        undefined,
+        function (error) {
+          console.error("Error loading OBJ:", error);
+        }
+      );
+
+      // Pokeball
+      loader.load(
+        "https://Punjaphon-Pun.github.io/pokeball.glb",
+        function (gltf) {
+          const object = gltf.scene;
+          object.castShadow = true; // ✅ วัตถุนี้สร้างเงา
+          // ตั้งค่า castShadow กับทุก mesh ใน object
+          object.traverse(function (child) {
+            if (child.isMesh) {
+              child.castShadow = true;
+              child.receiveShadow = true;
+            }
+          });
+          object.position.set(-1.25, 2.5, -3.0);
+          object.scale.set(0.2, 0.2, 0.2);
+          scene.add(object);
+        },
+        undefined,
+        function (error) {
+          console.error("Error loading OBJ:", error);
+        }
+      );
+
+      // ✅ render loop
+      function animate(t) {
+        //directionalLight.position.x = Math.sin(t / 4000)*20;
+        //directionalLight.position.y = Math.cos(t / 4000)*20;
+        renderer.render(scene, camera);
+        requestAnimationFrame(animate);
+      }
+      animate(0);
+      window.addEventListener("mousemove", (event) => {
+        /*if (event.key === 'q') {
+                pointLight.position.y += 0.2; //เลื่อนขึ้น
+            }
+            else if (event.key === 'e') {
+                pointLight.position.y -= 0.2 //เลื่อนลง
+            }
+            else if (event.key === 'a') {
+                pointLight.position.x -= 0.2; //เลื่อนไปทางซ้าย
+            }
+            else if (event.key === 'd') {
+                pointLight.position.x += 0.2; //เลื่อนไปทางขวา
+            }
+            else if (event.key === 'w') {
+                pointLight.position.z -= 0.2; //มาข้างหน้า
+            }
+            else if (event.key === 's') {
+                pointLight.position.z += 0.2; //ไปข้างหลัง
+            }*/
+        // นำตำแหน่งเมาส์ (0..window.innerWidth, 0..window.innerHeight)
+        // มา normalize เป็นช่วง -1 ถึง 1
+        // const x = (event.clientX / window.innerWidth) * 2 - 1;
+        // const y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+        // ปรับตำแหน่ง pointLight ให้สัมพันธ์กับการขยับเมาส์
+        // directionalLight.position.x = x * 5; // คูณเพื่อกำหนดระยะเลื่อน
+        // directionalLight.position.y = y * 5;
+      });
+    </script>
+  </body>
+</html>
