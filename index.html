@@ -55,12 +55,12 @@
       scene.add(directionalLightHelper);
 
       // ✅ Point Light
-      // const pointLight = new THREE.PointLight(0xffaaaa, 10, 5);
-      // pointLight.position.set(0, 3, 0);
-      // pointLight.castShadow = true;
-      // scene.add(pointLight);
-      // const pointLightHelper = new THREE.PointLightHelper(pointLight, 0.2);
-      // scene.add(pointLightHelper);
+      const pointLight = new THREE.PointLight(0xffffff, 5, 5);
+      pointLight.position.set(0, 4, -3.5);
+      pointLight.castShadow = true;
+      scene.add(pointLight);
+      const pointLightHelper = new THREE.PointLightHelper(pointLight, 0.2);
+      scene.add(pointLightHelper);
 
       // ใส่พื้น
       const texFloor = new THREE.TextureLoader().load(
@@ -192,7 +192,7 @@
         "https://Punjaphon-Pun.github.io/name_me.glb",
         function (gltf) {
           const object = gltf.scene;
-          object.castShadow = true; // ✅ วัตถุนี้สร้างเงา
+          // object.castShadow = true; // ✅ วัตถุนี้สร้างเงา
           // ตั้งค่า castShadow กับทุก mesh ใน object
           object.traverse(function (child) {
             if (child.isMesh) {
